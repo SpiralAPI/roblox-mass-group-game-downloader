@@ -15,23 +15,27 @@ assetDownloadEndpoint = "https://assetdelivery.roblox.com/v1/asset/?id="
 
 # FUNCTIONS
 def validateCookie(cookie: str) -> bool:
-    headers = {
-        'cookie': f'.ROBLOSECURITY={cookie}'
-    }
-    response = requests.get('https://www.roblox.com/mobileapi/userinfo', headers=headers)
+    headers = {"cookie": f".ROBLOSECURITY={cookie}"}
+    response = requests.get(
+        "https://www.roblox.com/mobileapi/userinfo", headers=headers
+    )
     try:
         if response.json()["UserID"]:
             return True
     except:
         return False
-    
+
+
 def validateGroup(groupId: int) -> bool:
-    response = requests.get(f'https://groups.roblox.com/v2/groups?groupIds={str(groupId)}')
+    response = requests.get(
+        f"https://groups.roblox.com/v2/groups?groupIds={str(groupId)}"
+    )
     try:
         if response.json()["data"][0]["id"]:
             return True
     except:
         return False
+
 
 def slugify(value, allow_unicode=False):
     """
@@ -43,11 +47,16 @@ def slugify(value, allow_unicode=False):
     """
     value = str(value)
     if allow_unicode:
-        value = unicodedata.normalize('NFKC', value)
+        value = unicodedata.normalize("NFKC", value)
     else:
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
-    value = re.sub(r'[^\w\s-]', '', value.lower())
-    return re.sub(r'[-\s]+', '-', value).strip('-_')
+        value = (
+            unicodedata.normalize("NFKD", value)
+            .encode("ascii", "ignore")
+            .decode("ascii")
+        )
+    value = re.sub(r"[^\w\s-]", "", value.lower())
+    return re.sub(r"[-\s]+", "-", value).strip("-_")
+
 
 def returnGamesList(groupID):
     cursor = ""
@@ -55,31 +64,43 @@ def returnGamesList(groupID):
 
     finalReturn = list()
 
-    while (complete == False):
-        response = requests.get(f"https://games.roblox.com/v2/groups/{groupID}/games?limit=100&cursor={cursor}")
+    while complete == False:
+        response = requests.get(
+            f"https://games.roblox.com/v2/groups/{groupID}/games?limit=100&cursor={cursor}"
+        )
         data = response.json()["data"]
 
-        if ((response.json()["nextPageCursor"] == "null") or (response.json()["nextPageCursor"] == None) or (response.json()["nextPageCursor"] == "None")):
+        if (
+            (response.json()["nextPageCursor"] == "null")
+            or (response.json()["nextPageCursor"] == None)
+            or (response.json()["nextPageCursor"] == "None")
+        ):
             complete = True
         else:
             complete = False
             cursor = response.json()["nextPageCursor"]
-        
+
         for Game in data:
-            finalReturn.append(dict(name = Game["name"], id = Game["rootPlace"]["id"]))
+            finalReturn.append(dict(name=Game["name"], id=Game["rootPlace"]["id"]))
 
         return finalReturn
 
+
 def saveGameFile(Name, placeId, groupId, cookie):
-    response = requests.get(assetDownloadEndpoint + str(placeId), headers={"cookie": f".ROBLOSECURITY={cookie}"})
+    response = requests.get(
+        assetDownloadEndpoint + str(placeId),
+        headers={"cookie": f".ROBLOSECURITY={cookie}"},
+    )
 
     with open(f"{gamesFolder}/{str(groupId)}_{slugify(Name)}.rbxl", "ab") as file:
         file.write(response.content)
         return f"{str(groupId)}_{slugify(Name)}.rbxl"
 
+
 def clearConsole():
-    os.system('cls' if os.name=='nt' else 'clear')
-    print("""
+    os.system("cls" if os.name == "nt" else "clear")
+    print(
+        """
 :'######::'########::'####:'########:::::'###::::'##::::::::
 '##... ##: ##.... ##:. ##:: ##.... ##:::'## ##::: ##::::::::
  ##:::..:: ##:::: ##:: ##:: ##:::: ##::'##:. ##:: ##::::::::
@@ -89,7 +110,9 @@ def clearConsole():
 . ######:: ##::::::::'####: ##:::. ##: ##:::: ##: ########::
 :......:::..:::::::::....::..:::::..::..:::::..::........:::
 :::::::::::::::::MASS GROUP GAME DOWNLOADER:::::::::::::::::\n\n
-""")
+"""
+    )
+
 
 # FUNCTIONALITY
 if not os.path.exists(gamesFolder):
@@ -99,7 +122,7 @@ clearConsole()
 
 tempCookieValid = False
 cookieVar = ""
-while (tempCookieValid == False):
+while tempCookieValid == False:
     cookie = input("Please enter your ROBLOX Cookie (type 'exit' to quit): ")
     if cookie == "exit":
         clearConsole()
@@ -115,7 +138,7 @@ clearConsole()
 
 tempGroupValid = False
 finalGroupId = 0
-while (tempGroupValid == False):
+while tempGroupValid == False:
     group = input("Please enter the target Group ID (type 'exit' to quit): ")
     if group == "exit":
         clearConsole()
