@@ -92,6 +92,9 @@ def clearConsole():
 """)
 
 # FUNCTIONALITY
+if not os.path.exists(gamesFolder):
+    os.makedirs(gamesFolder)
+
 clearConsole()
 
 tempCookieValid = False
