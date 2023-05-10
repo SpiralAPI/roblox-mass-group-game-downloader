@@ -83,7 +83,7 @@ def returnGamesList(groupID):
         for Game in data:
             finalReturn.append(dict(name=Game["name"], id=Game["rootPlace"]["id"]))
 
-        return finalReturn
+    return finalReturn
 
 
 def saveGameFile(Name, placeId, groupId, cookie):
