@@ -11,10 +11,10 @@ import sys
 
 # VARIABLES
 gamesFolder = "games"
-assetDownloadEndpoint = "https://assetdelivery.roblox.com/v1/asset/?id="
+assetDownloadEndpoint = "https://assetdelivery.roblox.com/v1/asset/?id=" # main endpoint to download assets
 
 # FUNCTIONS
-def validateCookie(cookie: str) -> bool:
+def validateCookie(cookie: str) -> bool: # pretty self explanatory, validates if the cookie works
     headers = {"cookie": f".ROBLOSECURITY={cookie}"}
     response = requests.get(
         "https://www.roblox.com/mobileapi/userinfo", headers=headers
@@ -26,7 +26,7 @@ def validateCookie(cookie: str) -> bool:
         return False
 
 
-def validateGroup(groupId: int) -> bool:
+def validateGroup(groupId: int) -> bool: # validates a group exists
     response = requests.get(
         f"https://groups.roblox.com/v2/groups?groupIds={str(groupId)}"
     )
@@ -58,8 +58,8 @@ def slugify(value, allow_unicode=False):
     return re.sub(r"[-\s]+", "-", value).strip("-_")
 
 
-def returnGamesList(groupID):
-    cursor = ""
+def returnGamesList(groupID): # returns all games under a group
+    cursor = "" # used to search through multiple pages
     complete = False
 
     finalReturn = list()
@@ -86,7 +86,7 @@ def returnGamesList(groupID):
     return finalReturn
 
 
-def saveGameFile(Name, placeId, groupId, cookie):
+def saveGameFile(Name, placeId, groupId, cookie): # saves a game file by its placeid and cookie
     response = requests.get(
         assetDownloadEndpoint + str(placeId),
         headers={"cookie": f".ROBLOSECURITY={cookie}"},
@@ -97,7 +97,7 @@ def saveGameFile(Name, placeId, groupId, cookie):
         return f"{str(groupId)}_{slugify(Name)}.rbxl"
 
 
-def clearConsole():
+def clearConsole(): # visuals
     os.system("cls" if os.name == "nt" else "clear")
     print(
         """
@@ -115,14 +115,14 @@ def clearConsole():
 
 
 # FUNCTIONALITY
-if not os.path.exists(gamesFolder):
+if not os.path.exists(gamesFolder): # ensure that the games folder exists
     os.makedirs(gamesFolder)
 
 clearConsole()
 
 tempCookieValid = False
 cookieVar = ""
-while tempCookieValid == False:
+while tempCookieValid == False: # inputs to make the experience better
     cookie = input("Please enter your ROBLOX Cookie (type 'exit' to quit): ")
     if cookie == "exit":
         clearConsole()
@@ -138,7 +138,7 @@ clearConsole()
 
 tempGroupValid = False
 finalGroupId = 0
-while tempGroupValid == False:
+while tempGroupValid == False: # more inputs
     group = input("Please enter the target Group ID (type 'exit' to quit): ")
     if group == "exit":
         clearConsole()
@@ -152,9 +152,9 @@ while tempGroupValid == False:
 
 clearConsole()
 
-Games = returnGamesList(finalGroupId)
+Games = returnGamesList(finalGroupId) # returns a list of all games in a group 
 for Game in Games:
-    fileName = saveGameFile(Game["name"], Game["id"], finalGroupId, cookieVar)
+    fileName = saveGameFile(Game["name"], Game["id"], finalGroupId, cookieVar) # the final loop, which will download all games!
     print(f"Successfully saved game file {fileName}")
 
 print("DOWNLOAD COMPLETE. EXITING PROGRAM.")
