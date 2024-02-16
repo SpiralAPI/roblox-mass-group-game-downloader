@@ -66,7 +66,8 @@ def returnGamesList(groupID): # returns all games under a group
 
     while complete == False:
         response = requests.get(
-            f"https://games.roblox.com/v2/groups/{groupID}/games?limit=100&cursor={cursor}"
+            f"https://games.roblox.com/v2/groups/{groupID}/games?limit=100&cursor={cursor}",
+            headers={"cookie": f".ROBLOSECURITY={cookie}"}
         )
         data = response.json()["data"]
 
